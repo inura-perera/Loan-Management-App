@@ -11,6 +11,11 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import static loanapp.DatabaseConnection.getConnection;
 
 /**
  *
@@ -23,6 +28,12 @@ public class Dashboard extends javax.swing.JFrame {
         initComponents();
         showDate();
         showTime();
+        try {
+            showTotalCustomers();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error fetching total customers: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
     
     void showDate(){
@@ -43,7 +54,6 @@ public class Dashboard extends javax.swing.JFrame {
         }).start();
     
     }
-
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -67,6 +77,7 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        totalCustLab = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
@@ -77,7 +88,6 @@ public class Dashboard extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1200, 900));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(1200, 900));
@@ -264,6 +274,11 @@ public class Dashboard extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Total Customers");
 
+        totalCustLab.setBackground(new java.awt.Color(51, 51, 51));
+        totalCustLab.setFont(new java.awt.Font("Cambria", 1, 48)); // NOI18N
+        totalCustLab.setForeground(new java.awt.Color(255, 255, 255));
+        totalCustLab.setText("Total Customers");
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -272,13 +287,19 @@ public class Dashboard extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(totalCustLab, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(116, 116, 116))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(62, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(totalCustLab, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         jPanel6.setBackground(new java.awt.Color(102, 102, 102));
@@ -404,7 +425,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(21, 21, 21)
                 .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(204, Short.MAX_VALUE))
+                .addContainerGap(179, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -457,8 +478,28 @@ public class Dashboard extends javax.swing.JFrame {
             this.dispose();
     }//GEN-LAST:event_dashboardButtonActionPerformed
 
+    void showTotalCustomers()throws SQLException{
+        
+        Connection conn = getConnection();
+        String query = "SELECT COUNT(*) AS total FROM Customers";
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+
+        if (rs.next()) {
+            int totalCustomers = rs.getInt("total");
+            totalCustLab.setText("" + totalCustomers);
+        }
+    
+    }
+    
+    
     private void addCustomerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCustomerButtonActionPerformed
         // TODO add your handling code here:
+        AddCustomer AddCustomerFrame = new AddCustomer();
+        AddCustomerFrame.setVisible(true);
+        AddCustomerFrame.pack();
+        AddCustomerFrame.setLocationRelativeTo(null);
+        this.dispose();
     }//GEN-LAST:event_addCustomerButtonActionPerformed
 
     private void addLoanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addLoanButtonActionPerformed
@@ -510,6 +551,7 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel9;
     private javax.swing.JButton signOutButton;
     private javax.swing.JLabel timeLab;
+    private javax.swing.JLabel totalCustLab;
     private javax.swing.JButton viewCustomerButton;
     private javax.swing.JButton viewCustomersButton;
     // End of variables declaration//GEN-END:variables
